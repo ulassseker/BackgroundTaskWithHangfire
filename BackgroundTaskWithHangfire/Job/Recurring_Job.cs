@@ -18,20 +18,22 @@ namespace BackgroundTaskWithHangfire.Job
             _context = context;
             _informationMongoService = informationMongoService;
 
-            //Recurring job
-            var crnExp = "0 0 0/2 1/1 * ?"; //2 saatte 1 çalışacak iş için oluşturulan cron expression
+            //Recurring job activation
+            var crnExp = "0 0 0/2 1/1 * ?"; //cron expression which works for every 2 hours 
             RecurringJob.AddOrUpdate(() => ProcessRecurringJob(),cronExpression: crnExp);
         }
 
-        public void ProcessRecurringJob()
+        public async Task ProcessRecurringJob()
         {
-            _ = SaveInstancesToDb();
+            await SaveInstancesToDb();
         }
 
         public async Task SaveInstancesToDb()
         {
+            //first get all information from db or /api/information 
             var information = await _context.Information.ToListAsync();
 
+            //convert it to mongo based bson format and create new instance for each object
             var informationForMongo = new InformationMongo();
             foreach(var item in information)
             {
@@ -43,6 +45,7 @@ namespace BackgroundTaskWithHangfire.Job
                 informationForMongo.Type = item.type;
                 informationForMongo.Price = item.price;
                 informationForMongo.Rating = item.rating;
+                informationForMongo.Id = null;
 
                 _informationMongoService.Create(informationForMongo);
             }

@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <Folder Include="Job\" />
+    <Folder Include="Content\" />
   </ItemGroup>
 
 </Project>

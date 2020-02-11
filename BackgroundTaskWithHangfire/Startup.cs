@@ -33,11 +33,12 @@ namespace BackgroundTaskWithHangfire
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            //adding hangfire configurations
             services.AddHangfire(_ => _.UseSqlServerStorage(Configuration.GetConnectionString("HangfireDbConn")));
 
             services.AddDbContext<BackgroundTaskWithHangfireContext>(options =>
                     options.UseSqlServer(Configuration.GetConnectionString("HangfireDbConn")));
-
+            //adding mongodb conigurations
             services.Configure<InformationMongoSettings>(
         Configuration.GetSection(nameof(InformationMongoSettings)));
 
@@ -65,10 +66,9 @@ namespace BackgroundTaskWithHangfire
             {
                 endpoints.MapControllers();
             });
-
+            //hangfire stuff
             app.UseHangfireDashboard();
             app.UseHangfireServer();
-
            
         }
     }
